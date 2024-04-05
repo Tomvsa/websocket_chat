@@ -35,7 +35,8 @@ wsServer.on('request', (request) => {
                 // Broadcast the chat message to all connected clients
                 wsServer.connections.forEach((client) => {
                     if (client !== connection && client.connected) {
-                        client.sendUTF(JSON.stringify({ type: 'chat_message', message: data.message }));
+                        // Include the username with the message
+                        client.sendUTF(JSON.stringify({ type: 'chat_message', username: connection.username, message: data.message }));
                     }
                 });
             }
@@ -45,6 +46,14 @@ wsServer.on('request', (request) => {
 
     connection.on('close', () => {
         console.log('Connection closed');
+        // Send a special message indicating that the user has disconnected
+        const disconnectedUsername = connection.username; // Get the username of the disconnected user
+        wsServer.connections.forEach((client) => {
+            if (client !== connection && client.connected) {
+                // Include the username with the special message
+                client.sendUTF(JSON.stringify({ type: 'user_disconnected', username: disconnectedUsername }));
+            }
+        });
     });
 });
 
@@ -87,8 +96,10 @@ function handleLogin(data, connection) {
     const { username, password } = data;
     const user = users.users.find(user => user.username === username && user.password === password);
     if (user) {
+        connection.username = username; // Assign the username to the connection
         connection.sendUTF(JSON.stringify({ type: 'login_success' }));
     } else {
         connection.sendUTF(JSON.stringify({ type: 'login_failure', message: 'Invalid username or password' }));
     }
 }
+
