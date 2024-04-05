@@ -1,9 +1,11 @@
 const http = require('http');
 const websocket = require('websocket');
 const fs = require('fs');
+const path = require('path');
+
 
 const server = http.createServer((req, res) => {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('WebSocket server is running');
 });
 
@@ -15,7 +17,7 @@ const wsServer = new websocket.server({
     httpServer: server
 });
 
-const users = loadUsers(); // Load users from file on server start
+const users = loadUsers();
 
 wsServer.on('request', (request) => {
     const connection = request.accept(null, request.origin);
@@ -23,12 +25,21 @@ wsServer.on('request', (request) => {
 
     connection.on('message', (message) => {
         if (message.type === 'utf8') {
+            console.log(message);
+            const data = JSON.parse(message.utf8Data);
+            if (data.type === 'register') {
+                handleRegistration(data, connection);
+            } else if (data.type === 'login') {
+                handleLogin(data, connection);
+            } else if (data.type === 'chat_message') {
+                // Broadcast the chat message to all connected clients
+                wsServer.connections.forEach((client) => {
+                    if (client !== connection && client.connected) {
+                        client.sendUTF(JSON.stringify({ type: 'chat_message', message: data.message }));
+                    }
+                });
+            }
             console.log('Received message:', message.utf8Data);
-            wsServer.connections.forEach((client) => {
-                if (client !== connection && client.connected) {
-                    client.sendUTF(message.utf8Data);
-                }
-            });
         }
     });
 
@@ -36,3 +47,48 @@ wsServer.on('request', (request) => {
         console.log('Connection closed');
     });
 });
+
+
+
+function loadUsers() {
+    try {
+        const filePath = path.join(__dirname, 'users.json');
+        const usersData = fs.readFileSync(filePath);
+        return JSON.parse(usersData);
+    } catch (error) {
+        console.error('Error loading users:', error);
+        return { users: [] };
+    }
+}
+
+
+function saveUsers() {
+    try {
+        const filePath = path.join(__dirname, 'users.json');
+        fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
+    } catch (error) {
+        console.error('Error saving users:', error);
+    }
+}
+
+
+function handleRegistration(data, connection) {
+    const { username, password } = data;
+    if (!users.users.find(user => user.username === username)) {
+        users.users.push({ username, password });
+        saveUsers();
+        connection.sendUTF(JSON.stringify({ type: 'registration_success' }));
+    } else {
+        connection.sendUTF(JSON.stringify({ type: 'registration_failure', message: 'Username already exists' }));
+    }
+}
+
+function handleLogin(data, connection) {
+    const { username, password } = data;
+    const user = users.users.find(user => user.username === username && user.password === password);
+    if (user) {
+        connection.sendUTF(JSON.stringify({ type: 'login_success' }));
+    } else {
+        connection.sendUTF(JSON.stringify({ type: 'login_failure', message: 'Invalid username or password' }));
+    }
+}
