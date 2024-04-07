@@ -54,8 +54,10 @@ wsServer.on('request', (request) => {
                 console.log('Received message:', message.utf8Data);
             } else if (data.type === 'get_connected_users') {
                 sendConnectedUsers(connection);
-            } else if(data.type === 'game_request'){
+            } else if (data.type === 'game_request') {
                 handleGameRequest(data, connection)
+            } else if (data.type === 'game_response') {
+                handleGameResponse(data, connection);
             }
 
             console.log('Received message:', message.utf8Data);
@@ -126,7 +128,7 @@ function sendConnectedUsers(connection) {
     const connectedUsers = wsServer.connections
         .filter(conn => conn !== connection) // Excluir la conexión actual
         .map(conn => ({ username: conn.username }));
-    
+
     // Send the list of connected users to the requesting client
     connection.sendUTF(JSON.stringify({ type: 'connected_users', users: connectedUsers }));
 }
@@ -134,13 +136,28 @@ function sendConnectedUsers(connection) {
 function handleGameRequest(data, connection) {
     const opponentUsername = data.opponent;
     const opponentConnection = wsServer.connections.find(client => client.username === opponentUsername);
-    
+
     if (opponentConnection && opponentConnection.connected) {
         // Enviar la solicitud de juego al oponente
-        opponentConnection.sendUTF(JSON.stringify({ type: 'game_request', sender: connection.username }));
+        opponentConnection.sendUTF(JSON.stringify({ type: 'game_request', sender: connection.username, receiver: opponentUsername }));
     } else {
         // Manejar el caso en que el oponente no está conectado
         connection.sendUTF(JSON.stringify({ type: 'game_request_failure', message: 'Opponent not found or not connected' }));
+    }
+}
+
+function handleGameResponse(data, connection) {
+    const senderUsername = data.sender;
+    const senderConnection = wsServer.connections.find(client => client.username === senderUsername);
+    const reiceiverConnection = wsServer.connections.find(client => client.username === data.receiver);
+
+    if (senderConnection && senderConnection.connected) {
+        // Reenviar la respuesta al solicitante
+        senderConnection.sendUTF(JSON.stringify({ type: 'game_response', accept: data.accept, sender: data.sender, receiver: data.receiver }));
+        reiceiverConnection.sendUTF(JSON.stringify({ type: 'game_response', accept: data.accept, sender: data.sender, receiver: data.receiver }));
+    } else {
+        // Manejar el caso en que el solicitante no está conectado
+        connection.sendUTF(JSON.stringify({ type: 'game_response_failure', message: 'Sender not found or not connected' }));
     }
 }
 

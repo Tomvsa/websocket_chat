@@ -73,17 +73,39 @@ ws.onmessage = (message) => {
             // Capturar la respuesta del usuario al hacer clic en los botones
             gameRequestModalYesBtn.addEventListener('click', () => {
                 // Enviar respuesta al servidor de que el usuario acepta la solicitud de juego
-                ws.send(JSON.stringify({ type: 'game_response', accept: true }));
+                ws.send(JSON.stringify({ type: 'game_response', accept: true, sender: data.sender, receiver: data.receiver }));
                 gameRequestModal.classList.remove('show'); // Ocultar el modal
                 gameRequestModal.style.display = 'none';
             });
 
             gameRequestModalNoBtn.addEventListener('click', () => {
                 // Enviar respuesta al servidor de que el usuario rechaza la solicitud de juego
-                ws.send(JSON.stringify({ type: 'game_response', accept: false }));
+                ws.send(JSON.stringify({ type: 'game_response', accept: false, sender: data.sender, receiver: data.receiver }));
                 gameRequestModal.classList.remove('show'); // Ocultar el modal
                 gameRequestModal.style.display = 'none';
             });
+            break;
+        case 'game_response':
+            const ChatDiv2 = document.getElementById('chat');
+            if (ChatDiv2) {
+                const messageDiv = document.createElement('div');
+                if (data.accept) {
+                    messageDiv.style.color = "green";
+                    messageDiv.textContent = "Sistema: Comienza el juego 3 en rayas";
+                    const usersListDiv = document.getElementById('usersList');
+                    usersListDiv.innerHTML = '';
+                } else {
+                    messageDiv.style.color = "red";
+                    messageDiv.textContent = "Sistema: La solicitud ha sido cancelada";
+                    const usersListDiv = document.getElementById('usersList');
+                    usersListDiv.innerHTML = '';
+                }
+
+                ChatDiv2.appendChild(messageDiv);
+                ChatDiv2.scrollTop = ChatDiv2.scrollHeight;
+            } else {
+                console.log('chat div not found');
+            }
             break;
 
 
