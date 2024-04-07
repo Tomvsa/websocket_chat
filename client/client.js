@@ -30,7 +30,6 @@ ws.onmessage = (message) => {
             }else{
                 const disconnectedMessage = `anonymous has disconnected.`;
             }
-            
             // Display the disconnected message in the chat
             const disconnectedDiv = document.createElement('div');
             disconnectedDiv.textContent = disconnectedMessage;
@@ -43,6 +42,7 @@ ws.onmessage = (message) => {
             const ChatDiv = document.getElementById('chat');
             if (ChatDiv) {
                 const messageDiv = document.createElement('div');
+                messageDiv.style.color = "#de4c8a";
                 messageDiv.textContent = `${data.sender} (private): ${data.message}`; // Include the sender and mark as private
                 ChatDiv.appendChild(messageDiv);
                 ChatDiv.scrollTop = ChatDiv.scrollHeight; // Scrolls to the bottom of the private chat div
@@ -58,7 +58,12 @@ ws.onmessage = (message) => {
         const chatDiv = document.getElementById('chat');
         if (chatDiv) {
             const messageDiv = document.createElement('div');
-            messageDiv.textContent = `${data.username}: ${data.message}`; // Include username
+            if(data.username){
+                messageDiv.textContent = `${data.username}: ${data.message}`;
+            }else{
+                messageDiv.textContent = `anonymous: ${data.message}`;
+            }
+            
             chatDiv.appendChild(messageDiv);
             chatDiv.scrollTop = chatDiv.scrollHeight; // Scrolls to the bottom of the chat div
         } else {
@@ -85,6 +90,9 @@ function sendMessage() {
     const chatDiv = document.getElementById('chat');
     if (chatDiv) {
         const messageDiv = document.createElement('div');
+        if (message.startsWith('/private')) {
+            messageDiv.style.color = '#de4c8a';
+        }
         messageDiv.textContent = `${'You: '} ${message}`;
         chatDiv.appendChild(messageDiv);
         chatDiv.scrollTop = chatDiv.scrollHeight; // Scrolls to the bottom of the chat div
