@@ -11,6 +11,9 @@ body {
     margin-bottom: 10px;
 }
 
+#usersList > div:hover {
+    background-color: #ccc;
+}
 input[type="text"] {
     padding: 5px;
     font-size: 16px;

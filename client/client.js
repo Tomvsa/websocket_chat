@@ -25,9 +25,9 @@ ws.onmessage = (message) => {
         case 'user_disconnected':
             // Handle user disconnection
             console.log('estoy aqui');
-            if(data.username){
+            if (data.username) {
                 const disconnectedMessage = `${data.username} has disconnected.`;
-            }else{
+            } else {
                 const disconnectedMessage = `anonymous has disconnected.`;
             }
             // Display the disconnected message in the chat
@@ -50,6 +50,19 @@ ws.onmessage = (message) => {
                 console.log('Private chat div not found');
             }
             break;
+        case 'connected_users':
+            // Actualizar la lista de usuarios conectados cuando se recibe una actualización del servidor
+            const usersListDiv = document.getElementById('usersList');
+            usersListDiv.innerHTML = '';
+            usersListDiv.innerHTML = "<h2>Selecciona un contrincante:</h2>"
+            const connectedUsers = data.users;
+            connectedUsers.forEach(user => {
+                const userDiv = document.createElement('div');
+                userDiv.textContent = user.username;
+                userDiv.addEventListener('click', () => requestGame(user.username)); // Solicitar juego al hacer clic en el usuario
+                usersListDiv.appendChild(userDiv);
+            });
+            break;
 
     }
 
@@ -58,12 +71,12 @@ ws.onmessage = (message) => {
         const chatDiv = document.getElementById('chat');
         if (chatDiv) {
             const messageDiv = document.createElement('div');
-            if(data.username){
+            if (data.username) {
                 messageDiv.textContent = `${data.username}: ${data.message}`;
-            }else{
+            } else {
                 messageDiv.textContent = `anonymous: ${data.message}`;
             }
-            
+
             chatDiv.appendChild(messageDiv);
             chatDiv.scrollTop = chatDiv.scrollHeight; // Scrolls to the bottom of the chat div
         } else {
@@ -122,4 +135,13 @@ function login() {
     ws.send(JSON.stringify({ type: 'login', username, password }));
     usernameInput.value = '';
     passwordInput.value = '';
+}
+
+function displayConnectedUsers() {
+    // Limpiar la lista antes de actualizarla
+    const usersListDiv = document.getElementById('usersList');
+    usersListDiv.innerHTML = '';
+
+    // Consultar al servidor para obtener la lista de usuarios conectados
+    ws.send(JSON.stringify({ type: 'get_connected_users' }));
 }

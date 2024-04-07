@@ -52,8 +52,10 @@ wsServer.on('request', (request) => {
                     });
                 }
                 console.log('Received message:', message.utf8Data);
+            } else if (data.type === 'get_connected_users') {
+                sendConnectedUsers(connection);
             }
-            
+
             console.log('Received message:', message.utf8Data);
         }
     });
@@ -116,4 +118,15 @@ function handleLogin(data, connection) {
         connection.sendUTF(JSON.stringify({ type: 'login_failure', message: 'Invalid username or password' }));
     }
 }
+
+function sendConnectedUsers(connection) {
+    // Extract usernames from active connections excluding the current connection
+    const connectedUsers = wsServer.connections
+        .filter(conn => conn !== connection) // Excluir la conexión actual
+        .map(conn => ({ username: conn.username }));
+    
+    // Send the list of connected users to the requesting client
+    connection.sendUTF(JSON.stringify({ type: 'connected_users', users: connectedUsers }));
+}
+
 
