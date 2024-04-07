@@ -59,7 +59,7 @@ wsServer.on('request', (request) => {
             } else if (data.type === 'game_response') {
                 handleGameResponse(data, connection);
             } else if(data.type === 'game_move'){
-                handleGameMove(data.index, connection, data.gameboard);
+                handleGameMove(data.index, connection, data.gameboard, data.participants);
             }
 
             console.log('Received message:', message.utf8Data);
@@ -166,7 +166,7 @@ function handleGameResponse(data, connection) {
     }
 }
 
-function handleGameMove(index, connection, gameBoard) {
+function handleGameMove(index, connection, gameBoard, participants) {
     // Verificar si el movimiento es válido (por ejemplo, si la celda está vacía)
     if (gameBoard[index] === '') {
         // Realizar el movimiento actualizando el tablero en el servidor

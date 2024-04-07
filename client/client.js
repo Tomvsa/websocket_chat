@@ -109,6 +109,8 @@ ws.onmessage = (message) => {
 
                 ChatDiv2.appendChild(messageDiv);
                 ChatDiv2.scrollTop = ChatDiv2.scrollHeight;
+                participants.push(data.sender, data.receiver);
+                console.log(participants);
             } else {
                 console.log('chat div not found');
             }
@@ -225,10 +227,11 @@ function requestGame(opponentUsername) {
 let gameBoard = ['', '', '', '', '', '', '', '', ''];
 let currentPlayer = 'X';
 let gameOver = false;
+const participants = [];
 
 // Función para enviar el movimiento al servidor
 function sendMoveToServer(index) {
-    ws.send(JSON.stringify({ type: 'game_move', index: index, gameboard: gameBoard }));
+    ws.send(JSON.stringify({ type: 'game_move', index: index, gameboard: gameBoard, participants: participants }));
 }
 
 
