@@ -117,7 +117,10 @@ function handleLogin(data, connection) {
     const user = users.users.find(user => user.username === username && user.password === password);
     if (user) {
         connection.username = username; // Assign the username to the connection
-        connection.sendUTF(JSON.stringify({ type: 'login_success' }));
+        wsServer.connections.forEach((conn) => { 
+            let isConnected = conn === connection;
+            conn.sendUTF(JSON.stringify({ type: 'login_success', user: username, authenticatedConnection: isConnected }));
+        });
     } else {
         connection.sendUTF(JSON.stringify({ type: 'login_failure', message: 'Invalid username or password' }));
     }

@@ -16,23 +16,30 @@ ws.onmessage = (message) => {
             alert(`Registration failed: ${data.message}`);
             break;
         case 'login_success':
-            alert('Login successful');
-            document.getElementById('loginForm').style.display = 'none';
+            if(data.authenticatedConnection){
+                document.getElementById('loginForm').style.display = 'none';
+            }
+            const connectedDiv = document.createElement('div');
+            connectedDiv.textContent = `Sistema: ${data.user} has connected.`;
+            connectedDiv.style.color = "green";
+            const chatDiv3 = document.getElementById('chat');
+            chatDiv3.appendChild(connectedDiv);
+            chatDiv3.scrollTop = chatDiv3.scrollHeight;
             break;
         case 'login_failure':
             alert(`Login failed: ${data.message}`);
             break;
         case 'user_disconnected':
             // Handle user disconnection
-            console.log('estoy aqui');
-            if (data.username) {
-                const disconnectedMessage = `${data.username} has disconnected.`;
-            } else {
-                const disconnectedMessage = `anonymous has disconnected.`;
-            }
-            // Display the disconnected message in the chat
             const disconnectedDiv = document.createElement('div');
-            disconnectedDiv.textContent = disconnectedMessage;
+            if (data.username) {
+                const disconnectedMessage = `Sistema: ${data.username} has disconnected.`;
+                disconnectedDiv.textContent = disconnectedMessage;
+            } else {
+                const disconnectedMessage = `Sistema: anonymous has disconnected.`;
+                disconnectedDiv.textContent = disconnectedMessage;
+            }
+            disconnectedDiv.style.color = "red";
             const chatDiv = document.getElementById('chat');
             chatDiv.appendChild(disconnectedDiv);
             chatDiv.scrollTop = chatDiv.scrollHeight; // Scrolls to the bottom of the chat div
