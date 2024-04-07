@@ -54,6 +54,8 @@ wsServer.on('request', (request) => {
                 console.log('Received message:', message.utf8Data);
             } else if (data.type === 'get_connected_users') {
                 sendConnectedUsers(connection);
+            } else if(data.type === 'game_request'){
+                handleGameRequest(data, connection)
             }
 
             console.log('Received message:', message.utf8Data);
@@ -127,6 +129,19 @@ function sendConnectedUsers(connection) {
     
     // Send the list of connected users to the requesting client
     connection.sendUTF(JSON.stringify({ type: 'connected_users', users: connectedUsers }));
+}
+
+function handleGameRequest(data, connection) {
+    const opponentUsername = data.opponent;
+    const opponentConnection = wsServer.connections.find(client => client.username === opponentUsername);
+    
+    if (opponentConnection && opponentConnection.connected) {
+        // Enviar la solicitud de juego al oponente
+        opponentConnection.sendUTF(JSON.stringify({ type: 'game_request', sender: connection.username }));
+    } else {
+        // Manejar el caso en que el oponente no está conectado
+        connection.sendUTF(JSON.stringify({ type: 'game_request_failure', message: 'Opponent not found or not connected' }));
+    }
 }
 
 

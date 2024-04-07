@@ -63,6 +63,29 @@ ws.onmessage = (message) => {
                 usersListDiv.appendChild(userDiv);
             });
             break;
+        case 'game_request':
+            const gameRequestModal = document.getElementById('gameRequestModal');
+            const gameRequestModalYesBtn = document.getElementById('gameRequestModalYesBtn');
+            const gameRequestModalNoBtn = document.getElementById('gameRequestModalNoBtn');
+            // Mostrar modal de confirmación
+            gameRequestModal.classList.add('show');
+            gameRequestModal.style.display = 'block';
+            // Capturar la respuesta del usuario al hacer clic en los botones
+            gameRequestModalYesBtn.addEventListener('click', () => {
+                // Enviar respuesta al servidor de que el usuario acepta la solicitud de juego
+                ws.send(JSON.stringify({ type: 'game_response', accept: true }));
+                gameRequestModal.classList.remove('show'); // Ocultar el modal
+                gameRequestModal.style.display = 'none';
+            });
+
+            gameRequestModalNoBtn.addEventListener('click', () => {
+                // Enviar respuesta al servidor de que el usuario rechaza la solicitud de juego
+                ws.send(JSON.stringify({ type: 'game_response', accept: false }));
+                gameRequestModal.classList.remove('show'); // Ocultar el modal
+                gameRequestModal.style.display = 'none';
+            });
+            break;
+
 
     }
 
@@ -144,4 +167,13 @@ function displayConnectedUsers() {
 
     // Consultar al servidor para obtener la lista de usuarios conectados
     ws.send(JSON.stringify({ type: 'get_connected_users' }));
+}
+
+function requestGame(opponentUsername) {
+    // Enviar una solicitud de juego al servidor
+    const requestData = {
+        type: 'game_request',
+        opponent: opponentUsername
+    };
+    ws.send(JSON.stringify(requestData));
 }
