@@ -58,6 +58,8 @@ wsServer.on('request', (request) => {
                 handleGameRequest(data, connection)
             } else if (data.type === 'game_response') {
                 handleGameResponse(data, connection);
+            } else if(data.type === 'game_move'){
+                handleGameMove(data.index, connection, data.gameboard);
             }
 
             console.log('Received message:', message.utf8Data);
@@ -162,6 +164,66 @@ function handleGameResponse(data, connection) {
         // Manejar el caso en que el solicitante no está conectado
         connection.sendUTF(JSON.stringify({ type: 'game_response_failure', message: 'Sender not found or not connected' }));
     }
+}
+
+function handleGameMove(index, connection, gameBoard) {
+    // Verificar si el movimiento es válido (por ejemplo, si la celda está vacía)
+    if (gameBoard[index] === '') {
+        // Realizar el movimiento actualizando el tablero en el servidor
+        if(!connection.playerX){
+            connection.playerX = connection.username;
+        }
+        gameBoard[index] = connection.username === connection.playerX ? 'X' : 'O'; // Asumiendo que playerX y playerO son los nombres de usuario de los jugadores
+        // Comprobar si hay un ganador después del movimiento
+        const winner = checkWinner(gameBoard, gameBoard[index]);
+        if (winner) {
+            // Notificar a ambos jugadores sobre el ganador y enviar el estado final del juego
+            wsServer.connections.forEach((conn) => {
+                conn.sendUTF(JSON.stringify({ type: 'game_over', winner: winner, gameBoard: gameBoard }));
+            });
+            // Reiniciar el estado del juego
+            // resetGame();
+        } else {
+            // Si no hay ganador, enviar el nuevo estado del juego a ambos jugadores
+            wsServer.connections.forEach((conn) => {
+                conn.sendUTF(JSON.stringify({ type: 'game_state', gameBoard: gameBoard }));
+            });
+        }
+    } else {
+        // Enviar un mensaje de error al cliente si la celda está ocupada
+        connection.sendUTF(JSON.stringify({ type: 'invalid_move', message: 'The selected cell is already occupied' }));
+    }
+}
+
+// Función para comprobar si alguien ha ganado
+function checkWinner(gameBoard, currentPlayer) {
+    // Comprobar filas
+    if (
+        (gameBoard[0] === currentPlayer && gameBoard[1] === currentPlayer && gameBoard[2] === currentPlayer) ||
+        (gameBoard[3] === currentPlayer && gameBoard[4] === currentPlayer && gameBoard[5] === currentPlayer) ||
+        (gameBoard[6] === currentPlayer && gameBoard[7] === currentPlayer && gameBoard[8] === currentPlayer)
+    ) {
+        return true;
+    }
+
+    // Comprobar columnas
+    if (
+        (gameBoard[0] === currentPlayer && gameBoard[3] === currentPlayer && gameBoard[6] === currentPlayer) ||
+        (gameBoard[1] === currentPlayer && gameBoard[4] === currentPlayer && gameBoard[7] === currentPlayer) ||
+        (gameBoard[2] === currentPlayer && gameBoard[5] === currentPlayer && gameBoard[8] === currentPlayer)
+    ) {
+        return true;
+    }
+
+    // Comprobar diagonales
+    if (
+        (gameBoard[0] === currentPlayer && gameBoard[4] === currentPlayer && gameBoard[8] === currentPlayer) ||
+        (gameBoard[2] === currentPlayer && gameBoard[4] === currentPlayer && gameBoard[6] === currentPlayer)
+    ) {
+        return true;
+    }
+
+    return false;
 }
 
 

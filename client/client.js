@@ -4,7 +4,6 @@ ws.onopen = () => {
     console.log('Connected to WebSocket server');
 };
 
-
 ws.onmessage = (message) => {
     const data = JSON.parse(message.data); // Parse JSON data
 
@@ -16,7 +15,7 @@ ws.onmessage = (message) => {
             alert(`Registration failed: ${data.message}`);
             break;
         case 'login_success':
-            if(data.authenticatedConnection){
+            if (data.authenticatedConnection) {
                 document.getElementById('loginForm').style.display = 'none';
             }
             const connectedDiv = document.createElement('div');
@@ -114,7 +113,22 @@ ws.onmessage = (message) => {
                 console.log('chat div not found');
             }
             break;
-
+        case 'game_over':
+            gameBoard = data.gameBoard;
+            function updateBoard(gameBoard) {
+                cells.forEach((cell, index) => {
+                    cell.textContent = gameBoard[index];
+                });
+            }
+            alert(`Game Over! Winner: ${data.winner}`);
+            break;
+        case 'game_state':
+            gameBoard = data.gameBoard;
+            updateBoard(gameBoard);
+            break;
+        case 'invalid_move':
+            alert(data.message);
+            break;
 
     }
 
@@ -206,3 +220,33 @@ function requestGame(opponentUsername) {
     };
     ws.send(JSON.stringify(requestData));
 }
+
+// Variables globales
+let gameBoard = ['', '', '', '', '', '', '', '', ''];
+let currentPlayer = 'X';
+let gameOver = false;
+
+// Función para enviar el movimiento al servidor
+function sendMoveToServer(index) {
+    ws.send(JSON.stringify({ type: 'game_move', index: index, gameboard: gameBoard }));
+}
+
+
+// Obtener las celdas del tablero
+const cells = document.querySelectorAll('.cell');
+
+// Función para actualizar el tablero
+function updateBoard(gameBoard) {
+    cells.forEach((cell, index) => {
+        cell.textContent = gameBoard[index];
+    });
+}
+
+
+// Dentro de la función para manejar los clics en las celdas del tablero
+cells.forEach((cell, index) => {
+    cell.addEventListener('click', () => {
+        sendMoveToServer(index);
+    });
+});
+
