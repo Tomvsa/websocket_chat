@@ -25,7 +25,12 @@ ws.onmessage = (message) => {
         case 'user_disconnected':
             // Handle user disconnection
             console.log('estoy aqui');
-            const disconnectedMessage = `${data.username} has disconnected.`;
+            if(data.username){
+                const disconnectedMessage = `${data.username} has disconnected.`;
+            }else{
+                const disconnectedMessage = `anonymous has disconnected.`;
+            }
+            
             // Display the disconnected message in the chat
             const disconnectedDiv = document.createElement('div');
             disconnectedDiv.textContent = disconnectedMessage;
@@ -33,6 +38,19 @@ ws.onmessage = (message) => {
             chatDiv.appendChild(disconnectedDiv);
             chatDiv.scrollTop = chatDiv.scrollHeight; // Scrolls to the bottom of the chat div
             break;
+        case 'private_message':
+            // Handle private messages
+            const ChatDiv = document.getElementById('chat');
+            if (ChatDiv) {
+                const messageDiv = document.createElement('div');
+                messageDiv.textContent = `${data.sender} (private): ${data.message}`; // Include the sender and mark as private
+                ChatDiv.appendChild(messageDiv);
+                ChatDiv.scrollTop = ChatDiv.scrollHeight; // Scrolls to the bottom of the private chat div
+            } else {
+                console.log('Private chat div not found');
+            }
+            break;
+
     }
 
 

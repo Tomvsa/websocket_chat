@@ -32,14 +32,28 @@ wsServer.on('request', (request) => {
             } else if (data.type === 'login') {
                 handleLogin(data, connection);
             } else if (data.type === 'chat_message') {
-                // Broadcast the chat message to all connected clients
-                wsServer.connections.forEach((client) => {
-                    if (client !== connection && client.connected) {
-                        // Include the username with the message
-                        client.sendUTF(JSON.stringify({ type: 'chat_message', username: connection.username, message: data.message }));
+                if (data.message.startsWith('/private')) {
+                    const parts = data.message.split(' ');
+                    const recipient = parts[1]; // El segundo elemento es el nombre del destinatario
+                    const messageContent = parts.slice(2).join(' '); // El resto es el contenido del mensaje
+                    const recipientConnection = wsServer.connections.find((client) => client.username === recipient);
+                    if (recipientConnection && recipientConnection.connected) {
+                        recipientConnection.sendUTF(JSON.stringify({ type: 'private_message', sender: connection.username, message: messageContent }));
+                        // connection.sendUTF(JSON.stringify({ type: 'private_message', recipient: recipient }));
+                    } else {
+                        connection.sendUTF(JSON.stringify({ type: 'private_message_failure', message: 'Recipient not found or not connected' }));
                     }
-                });
+                } else {
+                    // Broadcast the regular chat message to all connected clients
+                    wsServer.connections.forEach((client) => {
+                        if (client !== connection && client.connected) {
+                            client.sendUTF(JSON.stringify({ type: 'chat_message', username: connection.username, message: data.message }));
+                        }
+                    });
+                }
+                console.log('Received message:', message.utf8Data);
             }
+            
             console.log('Received message:', message.utf8Data);
         }
     });
