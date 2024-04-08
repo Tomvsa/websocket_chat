@@ -136,8 +136,8 @@ ws.onmessage = (message) => {
             alert(data.message);
             break;
         case 'game_reset':
-            updateBoard(gameBoard);
-            const button2 = document.getElementById('reset-game');
+            updateBoard(data.gameBoard);
+            const button2 = document.getElementById('reset-button');
             button2.style.display = 'none';
             break;
 
