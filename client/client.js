@@ -120,7 +120,7 @@ ws.onmessage = (message) => {
         case 'game_over':
             gameBoard = data.gameBoard;
             updateBoard(gameBoard);
-            alert(`Game Over! Winner: ${data.winner}`);
+            alert(`Game Over! Winner: ${data.name}`);
             break;
         case 'game_state':
             gameBoard = data.gameBoard;

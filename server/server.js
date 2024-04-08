@@ -200,7 +200,7 @@ function handleGameMove(index, connection, gameBoard) {
             gameEnded = true;
             // Notificar a ambos jugadores sobre el ganador y enviar el estado final del juego
             Participants.forEach(participant => {
-                participant.connection.sendUTF(JSON.stringify({ type: 'game_over', winner: winner, gameBoard: gameBoard }));
+                participant.connection.sendUTF(JSON.stringify({ type: 'game_over', winner: winner, gameBoard: gameBoard, name: currentPlayer.name }));
             });
         } else {
             // Si no hay ganador, enviar el nuevo estado del juego a ambos jugadores
