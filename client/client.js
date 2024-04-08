@@ -138,6 +138,8 @@ ws.onmessage = (message) => {
         case 'game_reset':
             updateBoard(data.gameBoard);
             const button2 = document.getElementById('reset-button');
+            const gameboard = document.getElementById('game-board');
+            gameboard.style.display = 'none';
             button2.style.display = 'none';
             break;
 
