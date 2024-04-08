@@ -59,7 +59,7 @@ wsServer.on('request', (request) => {
                 handleGameRequest(data, connection)
             } else if (data.type === 'game_response') {
                 handleGameResponse(data, connection);
-            } else if(data.type === 'game_move'){
+            } else if (data.type === 'game_move') {
                 handleGameMove(data.index, connection, data.gameboard);
             }
 
@@ -120,7 +120,7 @@ function handleLogin(data, connection) {
     const user = users.users.find(user => user.username === username && user.password === password);
     if (user) {
         connection.username = username; // Assign the username to the connection
-        wsServer.connections.forEach((conn) => { 
+        wsServer.connections.forEach((conn) => {
             let isConnected = conn === connection;
             conn.sendUTF(JSON.stringify({ type: 'login_success', user: username, authenticatedConnection: isConnected }));
         });
@@ -171,14 +171,21 @@ function handleGameResponse(data, connection) {
     }
 }
 
-
+let currentPlayerIndex = 0;
 function handleGameMove(index, connection, gameBoard) {
     // Verificar si el movimiento es válido (por ejemplo, si la celda está vacía)
     if (gameBoard[index] === '') {
         // Obtener el símbolo del jugador actual basado en su conexión
-        const currentPlayerSymbol = Participants.find(participant => participant.connection === connection).symbol;
-
+        const currentPlayer = Participants[currentPlayerIndex];
+        // const currentPlayerSymbol = Participants.find(participant => participant.connection === connection).symbol;
         // Realizar el movimiento actualizando el tablero en el servidor
+        const currentPlayerSymbol = currentPlayer.symbol;
+
+        // Verificar si el jugador que realiza el movimiento es el que le corresponde en el turno
+        if (currentPlayer.connection !== connection) {
+            connection.sendUTF(JSON.stringify({ type: 'invalid_move', message: 'It\'s not your turn' }));
+            return;
+        }
         gameBoard[index] = currentPlayerSymbol;
 
         // Comprobar si hay un ganador después del movimiento
@@ -194,6 +201,8 @@ function handleGameMove(index, connection, gameBoard) {
                 participant.connection.sendUTF(JSON.stringify({ type: 'game_state', gameBoard: gameBoard }));
             });
         }
+        // Alternar el turno al siguiente jugador
+        currentPlayerIndex = (currentPlayerIndex + 1) % Participants.length;
     } else {
         // Enviar un mensaje de error al cliente si la celda está ocupada
         connection.sendUTF(JSON.stringify({ type: 'invalid_move', message: 'The selected cell is already occupied' }));
