@@ -117,11 +117,7 @@ ws.onmessage = (message) => {
             break;
         case 'game_over':
             gameBoard = data.gameBoard;
-            function updateBoard(gameBoard) {
-                cells.forEach((cell, index) => {
-                    cell.textContent = gameBoard[index];
-                });
-            }
+            updateBoard(gameBoard);
             alert(`Game Over! Winner: ${data.winner}`);
             break;
         case 'game_state':

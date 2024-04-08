@@ -2,8 +2,9 @@ const http = require('http');
 const websocket = require('websocket');
 const fs = require('fs');
 const path = require('path');
-
-
+const Participant = require('../Model/Participant');
+let Participants = [];
+6
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('WebSocket server is running');
@@ -59,7 +60,7 @@ wsServer.on('request', (request) => {
             } else if (data.type === 'game_response') {
                 handleGameResponse(data, connection);
             } else if(data.type === 'game_move'){
-                handleGameMove(data.index, connection, data.gameboard, data.participants);
+                handleGameMove(data.index, connection, data.gameboard);
             }
 
             console.log('Received message:', message.utf8Data);
@@ -155,9 +156,13 @@ function handleGameResponse(data, connection) {
     const senderUsername = data.sender;
     const senderConnection = wsServer.connections.find(client => client.username === senderUsername);
     const reiceiverConnection = wsServer.connections.find(client => client.username === data.receiver);
+    let participant1 = new Participant(senderConnection, data.sender, 'X');
+    let participant2 = new Participant(reiceiverConnection, data.receiver, 'O');
 
     if (senderConnection && senderConnection.connected) {
         // Reenviar la respuesta al solicitante
+        Participants = [];
+        Participants.push(participant1, participant2);
         senderConnection.sendUTF(JSON.stringify({ type: 'game_response', accept: data.accept, sender: data.sender, receiver: data.receiver }));
         reiceiverConnection.sendUTF(JSON.stringify({ type: 'game_response', accept: data.accept, sender: data.sender, receiver: data.receiver }));
     } else {
@@ -166,27 +171,27 @@ function handleGameResponse(data, connection) {
     }
 }
 
-function handleGameMove(index, connection, gameBoard, participants) {
+
+function handleGameMove(index, connection, gameBoard) {
     // Verificar si el movimiento es válido (por ejemplo, si la celda está vacía)
     if (gameBoard[index] === '') {
+        // Obtener el símbolo del jugador actual basado en su conexión
+        const currentPlayerSymbol = Participants.find(participant => participant.connection === connection).symbol;
+
         // Realizar el movimiento actualizando el tablero en el servidor
-        if(!connection.playerX){
-            connection.playerX = connection.username;
-        }
-        gameBoard[index] = connection.username === connection.playerX ? 'X' : 'O'; // Asumiendo que playerX y playerO son los nombres de usuario de los jugadores
+        gameBoard[index] = currentPlayerSymbol;
+
         // Comprobar si hay un ganador después del movimiento
-        const winner = checkWinner(gameBoard, gameBoard[index]);
+        const winner = checkWinner(gameBoard, currentPlayerSymbol);
         if (winner) {
             // Notificar a ambos jugadores sobre el ganador y enviar el estado final del juego
-            wsServer.connections.forEach((conn) => {
-                conn.sendUTF(JSON.stringify({ type: 'game_over', winner: winner, gameBoard: gameBoard }));
+            Participants.forEach(participant => {
+                participant.connection.sendUTF(JSON.stringify({ type: 'game_over', winner: winner, gameBoard: gameBoard }));
             });
-            // Reiniciar el estado del juego
-            // resetGame();
         } else {
             // Si no hay ganador, enviar el nuevo estado del juego a ambos jugadores
-            wsServer.connections.forEach((conn) => {
-                conn.sendUTF(JSON.stringify({ type: 'game_state', gameBoard: gameBoard }));
+            Participants.forEach(participant => {
+                participant.connection.sendUTF(JSON.stringify({ type: 'game_state', gameBoard: gameBoard }));
             });
         }
     } else {
