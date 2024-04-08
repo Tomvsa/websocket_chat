@@ -101,7 +101,6 @@ ws.onmessage = (message) => {
                     const usersListDiv = document.getElementById('usersList');
                     usersListDiv.innerHTML = '';
                     const table = document.getElementById('game-board').style.display = "flex";
-                    const button = document.getElementById('reset-button').style.display = "block";
                 } else {
                     messageDiv.style.color = "red";
                     messageDiv.textContent = "Sistema: La solicitud ha sido cancelada";
@@ -127,6 +126,7 @@ ws.onmessage = (message) => {
             ChatDiv3.scrollTop = ChatDiv3.scrollHeight;
             messageDiv.textContent = `Sistema: La partida ha terminado. Ganador: ${data.name}`;
             messageDiv.style.color = "green";
+            const button = document.getElementById('reset-button').style.display = "block";
             break;
         case 'game_state':
             gameBoard = data.gameBoard;
@@ -134,6 +134,11 @@ ws.onmessage = (message) => {
             break;
         case 'invalid_move':
             alert(data.message);
+            break;
+        case 'game_reset':
+            updateBoard(gameBoard);
+            const button2 = document.getElementById('reset-game');
+            button2.style.display = 'none';
             break;
 
     }
@@ -257,3 +262,8 @@ cells.forEach((cell, index) => {
     });
 });
 
+
+function resetGame() {
+    gameBoard = ['', '', '', '', '', '', '', '', ''];
+    ws.send(JSON.stringify({ type: 'reset_game', gameBoard: gameBoard }));
+}

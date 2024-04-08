@@ -61,6 +61,11 @@ wsServer.on('request', (request) => {
                 handleGameResponse(data, connection);
             } else if (data.type === 'game_move') {
                 handleGameMove(data.index, connection, data.gameboard);
+            } else if (data.type === 'reset_game'){
+                gameEnded = false;
+                Participants.forEach(participant => {
+                    participant.connection.sendUTF(JSON.stringify({ type: 'game_reset', gameBoard: data.gameBoard }));
+                });
             }
 
             console.log('Received message:', message.utf8Data);
