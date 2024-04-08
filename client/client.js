@@ -100,6 +100,8 @@ ws.onmessage = (message) => {
                     messageDiv.textContent = "Sistema: Comienza el juego 3 en rayas";
                     const usersListDiv = document.getElementById('usersList');
                     usersListDiv.innerHTML = '';
+                    const table = document.getElementById('game-board').style.display = "flex";
+                    const button = document.getElementById('reset-button').style.display = "block";
                 } else {
                     messageDiv.style.color = "red";
                     messageDiv.textContent = "Sistema: La solicitud ha sido cancelada";
