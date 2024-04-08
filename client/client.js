@@ -121,6 +121,12 @@ ws.onmessage = (message) => {
             gameBoard = data.gameBoard;
             updateBoard(gameBoard);
             alert(`Game Over! Winner: ${data.name}`);
+            const ChatDiv3 = document.getElementById('chat');
+            const messageDiv = document.createElement('div');
+            ChatDiv3.appendChild(messageDiv);
+            ChatDiv3.scrollTop = ChatDiv3.scrollHeight;
+            messageDiv.textContent = `Sistema: La partida ha terminado. Ganador: ${data.name}`;
+            messageDiv.style.color = "green";
             break;
         case 'game_state':
             gameBoard = data.gameBoard;
