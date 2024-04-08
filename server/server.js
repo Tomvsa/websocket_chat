@@ -172,12 +172,18 @@ function handleGameResponse(data, connection) {
 }
 
 let currentPlayerIndex = 0;
+let gameEnded = false;
 function handleGameMove(index, connection, gameBoard) {
+    if (gameEnded) {
+        connection.sendUTF(JSON.stringify({ type: 'invalid_move', message: 'The game has already ended' }));
+        return;
+    }
     // Verificar si el movimiento es válido (por ejemplo, si la celda está vacía)
     if (gameBoard[index] === '') {
         // Obtener el símbolo del jugador actual basado en su conexión
         const currentPlayer = Participants[currentPlayerIndex];
         // const currentPlayerSymbol = Participants.find(participant => participant.connection === connection).symbol;
+
         // Realizar el movimiento actualizando el tablero en el servidor
         const currentPlayerSymbol = currentPlayer.symbol;
 
@@ -191,6 +197,7 @@ function handleGameMove(index, connection, gameBoard) {
         // Comprobar si hay un ganador después del movimiento
         const winner = checkWinner(gameBoard, currentPlayerSymbol);
         if (winner) {
+            gameEnded = true;
             // Notificar a ambos jugadores sobre el ganador y enviar el estado final del juego
             Participants.forEach(participant => {
                 participant.connection.sendUTF(JSON.stringify({ type: 'game_over', winner: winner, gameBoard: gameBoard }));
