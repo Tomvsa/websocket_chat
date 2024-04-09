@@ -57,36 +57,41 @@ ws.onmessage = (message) => {
                 console.log('Private chat div not found');
             }
             break;
-            case 'connected_users':
-                // Actualizar la lista de usuarios conectados cuando se recibe una actualización del servidor
-                const usersListDiv = document.getElementById('usersList');
-                // Limpiar el contenido anterior
-                usersListDiv.innerHTML = '';
-                // Agregar título
-                const title = document.createElement('h2');
-                title.textContent = 'Selecciona un contrincante:';
-                usersListDiv.appendChild(title);
-                // Agregar lista de usuarios
-                const userList = document.createElement('ul');
-                userList.classList.add('list-group'); // Agregar clase de Bootstrap
-                const connectedUsers = data.users;
-                connectedUsers.forEach(user => {
-                    const listItem = document.createElement('li');
-                    console.log(user.username);
-                    if(user.username != null){
-                        listItem.textContent = user.username;
-                        listItem.classList.add('list-group-item'); // Agregar clase de Bootstrap
-                        listItem.addEventListener('click', () => requestGame(user.username)); // Solicitar juego al hacer clic en el usuario
-                        userList.appendChild(listItem);
-                    }else{
-                        listItem.textContent = 'no hay contrincantes';
-                        listItem.classList.add('list-group-item');
-                        userList.appendChild(listItem);
-                    }
-                    
-                });
-                usersListDiv.appendChild(userList);          
-                break;
+        case 'connected_users':
+            // Actualizar la lista de usuarios conectados cuando se recibe una actualización del servidor
+            const usersListDiv = document.getElementById('usersList');
+            // Limpiar el contenido anterior
+            usersListDiv.innerHTML = '';
+            // Agregar título
+            const title = document.createElement('h2');
+            title.textContent = 'Selecciona un contrincante:';
+            usersListDiv.appendChild(title);
+            // Agregar lista de usuarios
+            const userList = document.createElement('ul');
+            userList.classList.add('list-group'); // Agregar clase de Bootstrap
+            const connectedUsers = data.users;
+            connectedUsers.forEach(user => {
+                const listItem = document.createElement('li');
+                console.log(user.username);
+                if (user.username != null) {
+                    listItem.textContent = user.username;
+                    listItem.classList.add('list-group-item'); // Agregar clase de Bootstrap
+                    listItem.addEventListener('click', function handleClick(e) {
+                        requestGame(user.username);
+                        e.target.style.display = "none";
+                        e.target.removeEventListener('click', handleClick);
+                    });
+                    userList.appendChild(listItem);
+
+                } else {
+                    listItem.textContent = 'no hay contrincantes';
+                    listItem.classList.add('list-group-item');
+                    userList.appendChild(listItem);
+                }
+
+            });
+            usersListDiv.appendChild(userList);
+            break;
         case 'game_request':
             const gameRequestModal = document.getElementById('gameRequestModal');
             const gameRequestModalYesBtn = document.getElementById('gameRequestModalYesBtn');
@@ -215,7 +220,7 @@ function sendMessage() {
 function register() {
     const usernameInput = document.getElementById('usernameInput');
     const passwordInput = document.getElementById('passwordInput');
-    if(usernameInput.value != '' && passwordInput.value != ''){
+    if (usernameInput.value != '' && passwordInput.value != '') {
         const username = usernameInput.value;
         const password = passwordInput.value;
         ws.send(JSON.stringify({ type: 'register', username, password }));
@@ -227,7 +232,7 @@ function register() {
 function login() {
     const usernameInput = document.getElementById('usernameInput');
     const passwordInput = document.getElementById('passwordInput');
-    if(usernameInput.value != '' && passwordInput.value != ''){
+    if (usernameInput.value != '' && passwordInput.value != '') {
         const username = usernameInput.value;
         const password = passwordInput.value;
         ws.send(JSON.stringify({ type: 'login', username, password }));
