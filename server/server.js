@@ -64,8 +64,9 @@ wsServer.on('request', (request) => {
             } else if (data.type === 'reset_game'){
                 gameEnded = false;
                 currentPlayerIndex = 0;
+                gameBoardServer = ['', '', '', '', '', '', '', '', ''];
                 Participants.forEach(participant => {
-                    participant.connection.sendUTF(JSON.stringify({ type: 'game_reset', gameBoard: data.gameBoard }));
+                    participant.connection.sendUTF(JSON.stringify({ type: 'game_reset', gameBoard: gameBoardServer }));
                 });
             }
 
