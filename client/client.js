@@ -49,7 +49,7 @@ ws.onmessage = (message) => {
             const ChatDiv = document.getElementById('chat');
             if (ChatDiv) {
                 const messageDiv = document.createElement('div');
-                messageDiv.style.color = "#de4c8a";
+                messageDiv.style.color = "#FFB6C1";
                 messageDiv.textContent = `${data.sender} (private): ${data.message}`; // Include the sender and mark as private
                 ChatDiv.appendChild(messageDiv);
                 ChatDiv.scrollTop = ChatDiv.scrollHeight; // Scrolls to the bottom of the private chat div
