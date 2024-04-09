@@ -74,6 +74,7 @@ ws.onmessage = (message) => {
                 const listItem = document.createElement('li');
                 console.log(user.username);
                 if (user.username != null) {
+                    listItem.innerHTML = "";
                     listItem.textContent = user.username;
                     listItem.classList.add('list-group-item'); // Agregar clase de Bootstrap
                     listItem.addEventListener('click', function handleClick(e) {
