@@ -1,4 +1,4 @@
-const ws = new WebSocket('ws://localhost:8080');
+const ws = new WebSocket('ws://localhost:3000');
 
 ws.onopen = () => {
     console.log('Connected to WebSocket server');
@@ -110,15 +110,12 @@ ws.onmessage = (message) => {
 
                 ChatDiv2.appendChild(messageDiv);
                 ChatDiv2.scrollTop = ChatDiv2.scrollHeight;
-                participants.push(data.sender, data.receiver);
-                console.log(participants);
             } else {
                 console.log('chat div not found');
             }
             break;
         case 'game_over':
-            gameBoard = data.gameBoard;
-            updateBoard(gameBoard);
+            updateBoard(data.gameBoard);
             alert(`Game Over! Winner: ${data.name}`);
             const ChatDiv3 = document.getElementById('chat');
             const messageDiv = document.createElement('div');
@@ -129,8 +126,7 @@ ws.onmessage = (message) => {
             const button = document.getElementById('reset-button').style.display = "block";
             break;
         case 'game_state':
-            gameBoard = data.gameBoard;
-            updateBoard(gameBoard);
+            updateBoard(data.gameBoard);
             break;
         case 'invalid_move':
             alert(data.message);
@@ -234,15 +230,10 @@ function requestGame(opponentUsername) {
     ws.send(JSON.stringify(requestData));
 }
 
-// Variables globales
-let gameBoard = ['', '', '', '', '', '', '', '', ''];
-let currentPlayer = 'X';
-let gameOver = false;
-const participants = [];
 
 // Función para enviar el movimiento al servidor
 function sendMoveToServer(index) {
-    ws.send(JSON.stringify({ type: 'game_move', index: index, gameboard: gameBoard, participants: participants }));
+    ws.send(JSON.stringify({ type: 'game_move', index: index }));
 }
 
 

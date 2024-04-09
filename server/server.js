@@ -10,8 +10,8 @@ const server = http.createServer((req, res) => {
     res.end('WebSocket server is running');
 });
 
-server.listen(8080, () => {
-    console.log('Server is listening on port 8080');
+server.listen(3000, () => {
+    console.log('Server is listening on port 3000');
 });
 
 const wsServer = new websocket.server({
@@ -60,9 +60,10 @@ wsServer.on('request', (request) => {
             } else if (data.type === 'game_response') {
                 handleGameResponse(data, connection);
             } else if (data.type === 'game_move') {
-                handleGameMove(data.index, connection, data.gameboard);
+                handleGameMove(data.index, connection);
             } else if (data.type === 'reset_game'){
                 gameEnded = false;
+                currentPlayerIndex = 0;
                 Participants.forEach(participant => {
                     participant.connection.sendUTF(JSON.stringify({ type: 'game_reset', gameBoard: data.gameBoard }));
                 });
@@ -178,13 +179,16 @@ function handleGameResponse(data, connection) {
 
 let currentPlayerIndex = 0;
 let gameEnded = false;
-function handleGameMove(index, connection, gameBoard) {
+let gameBoardServer = ['', '', '', '', '', '', '', '', ''];
+function handleGameMove(index, connection) {
     if (gameEnded) {
         connection.sendUTF(JSON.stringify({ type: 'invalid_move', message: 'The game has already ended' }));
+        gameBoardServer = ['', '', '', '', '', '', '', '', ''];
         return;
     }
+
     // Verificar si el movimiento es válido (por ejemplo, si la celda está vacía)
-    if (gameBoard[index] === '') {
+    if (gameBoardServer[index] === '') {
         // Obtener el símbolo del jugador actual basado en su conexión
         const currentPlayer = Participants[currentPlayerIndex];
         // const currentPlayerSymbol = Participants.find(participant => participant.connection === connection).symbol;
@@ -197,20 +201,20 @@ function handleGameMove(index, connection, gameBoard) {
             connection.sendUTF(JSON.stringify({ type: 'invalid_move', message: 'It\'s not your turn' }));
             return;
         }
-        gameBoard[index] = currentPlayerSymbol;
+        gameBoardServer[index] = currentPlayerSymbol;
 
         // Comprobar si hay un ganador después del movimiento
-        const winner = checkWinner(gameBoard, currentPlayerSymbol);
+        const winner = checkWinner(gameBoardServer, currentPlayerSymbol);
         if (winner) {
             gameEnded = true;
             // Notificar a ambos jugadores sobre el ganador y enviar el estado final del juego
             Participants.forEach(participant => {
-                participant.connection.sendUTF(JSON.stringify({ type: 'game_over', winner: winner, gameBoard: gameBoard, name: currentPlayer.name }));
+                participant.connection.sendUTF(JSON.stringify({ type: 'game_over', winner: winner, gameBoard: gameBoardServer, name: currentPlayer.name }));
             });
         } else {
             // Si no hay ganador, enviar el nuevo estado del juego a ambos jugadores
             Participants.forEach(participant => {
-                participant.connection.sendUTF(JSON.stringify({ type: 'game_state', gameBoard: gameBoard }));
+                participant.connection.sendUTF(JSON.stringify({ type: 'game_state', gameBoard: gameBoardServer }));
             });
         }
         // Alternar el turno al siguiente jugador
