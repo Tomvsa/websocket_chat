@@ -72,10 +72,18 @@ ws.onmessage = (message) => {
                 const connectedUsers = data.users;
                 connectedUsers.forEach(user => {
                     const listItem = document.createElement('li');
-                    listItem.textContent = user.username;
-                    listItem.classList.add('list-group-item'); // Agregar clase de Bootstrap
-                    listItem.addEventListener('click', () => requestGame(user.username)); // Solicitar juego al hacer clic en el usuario
-                    userList.appendChild(listItem);
+                    console.log(user.username);
+                    if(user.username != null){
+                        listItem.textContent = user.username;
+                        listItem.classList.add('list-group-item'); // Agregar clase de Bootstrap
+                        listItem.addEventListener('click', () => requestGame(user.username)); // Solicitar juego al hacer clic en el usuario
+                        userList.appendChild(listItem);
+                    }else{
+                        listItem.textContent = 'no hay contrincantes';
+                        listItem.classList.add('list-group-item');
+                        userList.appendChild(listItem);
+                    }
+                    
                 });
                 usersListDiv.appendChild(userList);          
                 break;
