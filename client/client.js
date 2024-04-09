@@ -17,6 +17,7 @@ ws.onmessage = (message) => {
         case 'login_success':
             if (data.authenticatedConnection) {
                 document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('start-game').style.display = 'block';
             }
             const connectedDiv = document.createElement('div');
             connectedDiv.textContent = `Sistema: ${data.user} has connected.`;
@@ -206,7 +207,7 @@ function sendMessage() {
 function register() {
     const usernameInput = document.getElementById('usernameInput');
     const passwordInput = document.getElementById('passwordInput');
-    if(username.value != '' && passwordInput.value != ''){
+    if(usernameInput.value != '' && passwordInput.value != ''){
         const username = usernameInput.value;
         const password = passwordInput.value;
         ws.send(JSON.stringify({ type: 'register', username, password }));
@@ -218,7 +219,7 @@ function register() {
 function login() {
     const usernameInput = document.getElementById('usernameInput');
     const passwordInput = document.getElementById('passwordInput');
-    if(username.value != '' && passwordInput.value != ''){
+    if(usernameInput.value != '' && passwordInput.value != ''){
         const username = usernameInput.value;
         const password = passwordInput.value;
         ws.send(JSON.stringify({ type: 'login', username, password }));
