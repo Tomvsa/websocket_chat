@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const Participant = require('../Model/Participant');
 let Participants = [];
-6
+
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('WebSocket server is running');
