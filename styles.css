@@ -3,7 +3,7 @@ body {
 }
 
 #chat {
-  width: 400px;
+  width: 500px;
   height: 300px;
   overflow-y: auto;
   border: 1px solid #ccc;
@@ -13,6 +13,16 @@ body {
 
 #usersList>div:hover {
   background-color: #ccc;
+}
+
+.btn {
+  background-color: rgb(65, 61, 61);
+  border: 1px solid whitesmoke;
+}
+
+.btn:hover{
+  background-color: rgb(116, 116, 116);
+  border: 1px solid black;
 }
 
 #game-board {
@@ -48,23 +58,3 @@ body {
   cursor: pointer;
 }
 
-
-
-input[type="text"] {
-  padding: 5px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-}
-
-button {
-  padding: 5px 10px;
-  font-size: 16px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
