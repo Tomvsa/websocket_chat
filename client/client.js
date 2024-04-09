@@ -153,7 +153,7 @@ ws.onmessage = (message) => {
 
     if (data.type === 'chat_message') {
         const chatDiv = document.getElementById('chat');
-        if (chatDiv) {
+        if (chatDiv && data.message != '') {
             const messageDiv = document.createElement('div');
             if (data.username) {
                 messageDiv.textContent = `${data.username}: ${data.message}`;
@@ -185,14 +185,16 @@ function sendMessage() {
     const messageInput = document.getElementById('messageInput');
     const message = messageInput.value;
     const chatDiv = document.getElementById('chat');
-    if (chatDiv) {
+    if (chatDiv && message != '') {
         const messageDiv = document.createElement('div');
         if (message.startsWith('/private')) {
             messageDiv.style.color = '#de4c8a';
+            chatDiv.appendChild(messageDiv);
+            chatDiv.scrollTop = chatDiv.scrollHeight; // Scrolls to the bottom of the chat div
         }
-        messageDiv.textContent = `${'You: '} ${message}`;
-        chatDiv.appendChild(messageDiv);
-        chatDiv.scrollTop = chatDiv.scrollHeight; // Scrolls to the bottom of the chat div
+        // messageDiv.textContent = `${'You: '} ${message}`;
+        // chatDiv.appendChild(messageDiv);
+        // chatDiv.scrollTop = chatDiv.scrollHeight; // Scrolls to the bottom of the chat div
     } else {
         console.log('Chat div not found');
     }

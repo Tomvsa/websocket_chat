@@ -40,6 +40,7 @@ wsServer.on('request', (request) => {
                     const recipientConnection = wsServer.connections.find((client) => client.username === recipient);
                     if (recipientConnection && recipientConnection.connected) {
                         recipientConnection.sendUTF(JSON.stringify({ type: 'private_message', sender: connection.username, message: messageContent }));
+                        connection.sendUTF(JSON.stringify({ type: 'private_message', sender: connection.username, message: messageContent }));
                         // connection.sendUTF(JSON.stringify({ type: 'private_message', recipient: recipient }));
                     } else {
                         connection.sendUTF(JSON.stringify({ type: 'private_message_failure', message: 'Recipient not found or not connected' }));
