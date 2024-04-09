@@ -20,7 +20,7 @@ ws.onmessage = (message) => {
             }
             const connectedDiv = document.createElement('div');
             connectedDiv.textContent = `Sistema: ${data.user} has connected.`;
-            connectedDiv.style.color = "green";
+            connectedDiv.style.color = "#98FB98";
             const chatDiv3 = document.getElementById('chat');
             chatDiv3.appendChild(connectedDiv);
             chatDiv3.scrollTop = chatDiv3.scrollHeight;
@@ -38,7 +38,7 @@ ws.onmessage = (message) => {
                 const disconnectedMessage = `Sistema: anonymous has disconnected.`;
                 disconnectedDiv.textContent = disconnectedMessage;
             }
-            disconnectedDiv.style.color = "red";
+            disconnectedDiv.style.color = "#FA8072";
             const chatDiv = document.getElementById('chat');
             chatDiv.appendChild(disconnectedDiv);
             chatDiv.scrollTop = chatDiv.scrollHeight; // Scrolls to the bottom of the chat div
@@ -96,13 +96,13 @@ ws.onmessage = (message) => {
             if (ChatDiv2) {
                 const messageDiv = document.createElement('div');
                 if (data.accept) {
-                    messageDiv.style.color = "green";
+                    messageDiv.style.color = "#98FB98";
                     messageDiv.textContent = "Sistema: Comienza el juego 3 en rayas";
                     const usersListDiv = document.getElementById('usersList');
                     usersListDiv.innerHTML = '';
                     const table = document.getElementById('game-board').style.display = "flex";
                 } else {
-                    messageDiv.style.color = "red";
+                    messageDiv.style.color = "#FA8072";
                     messageDiv.textContent = "Sistema: La solicitud ha sido cancelada";
                     const usersListDiv = document.getElementById('usersList');
                     usersListDiv.innerHTML = '';
@@ -122,7 +122,7 @@ ws.onmessage = (message) => {
             ChatDiv3.appendChild(messageDiv);
             ChatDiv3.scrollTop = ChatDiv3.scrollHeight;
             messageDiv.textContent = `Sistema: La partida ha terminado. Ganador: ${data.name}`;
-            messageDiv.style.color = "green";
+            messageDiv.style.color = "#98FB98";
             const button = document.getElementById('reset-button').style.display = "block";
             break;
         case 'game_state':
