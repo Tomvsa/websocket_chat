@@ -206,21 +206,25 @@ function sendMessage() {
 function register() {
     const usernameInput = document.getElementById('usernameInput');
     const passwordInput = document.getElementById('passwordInput');
-    const username = usernameInput.value;
-    const password = passwordInput.value;
-    ws.send(JSON.stringify({ type: 'register', username, password }));
-    usernameInput.value = '';
-    passwordInput.value = '';
+    if(username.value != '' && passwordInput.value != ''){
+        const username = usernameInput.value;
+        const password = passwordInput.value;
+        ws.send(JSON.stringify({ type: 'register', username, password }));
+        usernameInput.value = '';
+        passwordInput.value = '';
+    }
 }
 
 function login() {
     const usernameInput = document.getElementById('usernameInput');
     const passwordInput = document.getElementById('passwordInput');
-    const username = usernameInput.value;
-    const password = passwordInput.value;
-    ws.send(JSON.stringify({ type: 'login', username, password }));
-    usernameInput.value = '';
-    passwordInput.value = '';
+    if(username.value != '' && passwordInput.value != ''){
+        const username = usernameInput.value;
+        const password = passwordInput.value;
+        ws.send(JSON.stringify({ type: 'login', username, password }));
+        usernameInput.value = '';
+        passwordInput.value = '';
+    }
 }
 
 function displayConnectedUsers() {
