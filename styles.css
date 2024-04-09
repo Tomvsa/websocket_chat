@@ -3,6 +3,7 @@ body {
   font-family: Arial, sans-serif;
 }
 
+
 #chat {
   width: 500px;
   height: 700px;
@@ -17,6 +18,7 @@ body {
 
 #usersList>div:hover {
   background-color: #ccc;
+  cursor: pointer;
 }
 
 .btn {
