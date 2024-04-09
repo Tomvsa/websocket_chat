@@ -17,7 +17,7 @@ ws.onmessage = (message) => {
         case 'login_success':
             if (data.authenticatedConnection) {
                 document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('start-game').style.display = 'block';
+                document.getElementById('start-game').style.display = 'inline';
             }
             const connectedDiv = document.createElement('div');
             connectedDiv.textContent = `Sistema: ${data.user} has connected.`;
@@ -77,7 +77,7 @@ ws.onmessage = (message) => {
                     listItem.addEventListener('click', () => requestGame(user.username)); // Solicitar juego al hacer clic en el usuario
                     userList.appendChild(listItem);
                 });
-                usersListDiv.appendChild(userList);
+                usersListDiv.appendChild(userList);          
                 break;
         case 'game_request':
             const gameRequestModal = document.getElementById('gameRequestModal');
