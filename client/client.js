@@ -56,19 +56,28 @@ ws.onmessage = (message) => {
                 console.log('Private chat div not found');
             }
             break;
-        case 'connected_users':
-            // Actualizar la lista de usuarios conectados cuando se recibe una actualización del servidor
-            const usersListDiv = document.getElementById('usersList');
-            usersListDiv.innerHTML = '';
-            usersListDiv.innerHTML = "<h2>Selecciona un contrincante:</h2>"
-            const connectedUsers = data.users;
-            connectedUsers.forEach(user => {
-                const userDiv = document.createElement('div');
-                userDiv.textContent = user.username;
-                userDiv.addEventListener('click', () => requestGame(user.username)); // Solicitar juego al hacer clic en el usuario
-                usersListDiv.appendChild(userDiv);
-            });
-            break;
+            case 'connected_users':
+                // Actualizar la lista de usuarios conectados cuando se recibe una actualización del servidor
+                const usersListDiv = document.getElementById('usersList');
+                // Limpiar el contenido anterior
+                usersListDiv.innerHTML = '';
+                // Agregar título
+                const title = document.createElement('h2');
+                title.textContent = 'Selecciona un contrincante:';
+                usersListDiv.appendChild(title);
+                // Agregar lista de usuarios
+                const userList = document.createElement('ul');
+                userList.classList.add('list-group'); // Agregar clase de Bootstrap
+                const connectedUsers = data.users;
+                connectedUsers.forEach(user => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = user.username;
+                    listItem.classList.add('list-group-item'); // Agregar clase de Bootstrap
+                    listItem.addEventListener('click', () => requestGame(user.username)); // Solicitar juego al hacer clic en el usuario
+                    userList.appendChild(listItem);
+                });
+                usersListDiv.appendChild(userList);
+                break;
         case 'game_request':
             const gameRequestModal = document.getElementById('gameRequestModal');
             const gameRequestModalYesBtn = document.getElementById('gameRequestModalYesBtn');

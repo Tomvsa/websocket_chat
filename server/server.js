@@ -47,7 +47,7 @@ wsServer.on('request', (request) => {
                 } else {
                     // Broadcast the regular chat message to all connected clients
                     wsServer.connections.forEach((client) => {
-                        if (client !== connection && client.connected) {
+                        if (client.connected) {
                             client.sendUTF(JSON.stringify({ type: 'chat_message', username: connection.username, message: data.message }));
                         }
                     });
