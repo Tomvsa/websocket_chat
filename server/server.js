@@ -69,6 +69,7 @@ wsServer.on('request', (request) => {
                 Participants.forEach(participant => {
                     participant.connection.sendUTF(JSON.stringify({ type: 'game_reset', gameBoard: gameBoardServer }));
                 });
+                Participants = [];
             }
 
             console.log('Received message:', message.utf8Data);
