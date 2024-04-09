@@ -70,6 +70,7 @@ wsServer.on('request', (request) => {
                     participant.connection.sendUTF(JSON.stringify({ type: 'game_reset', gameBoard: gameBoardServer }));
                 });
                 Participants = [];
+                gameStarted = false;
             }
 
             console.log('Received message:', message.utf8Data);
@@ -161,21 +162,25 @@ function handleGameRequest(data, connection) {
     }
 }
 
+let gameStarted = false;
+
 function handleGameResponse(data, connection) {
     const senderUsername = data.sender;
     const senderConnection = wsServer.connections.find(client => client.username === senderUsername);
-    const reiceiverConnection = wsServer.connections.find(client => client.username === data.receiver);
+    const receiverConnection = wsServer.connections.find(client => client.username === data.receiver);
     let participant1 = new Participant(senderConnection, data.sender, 'X');
-    let participant2 = new Participant(reiceiverConnection, data.receiver, 'O');
+    let participant2 = new Participant(receiverConnection, data.receiver, 'O');
 
     if (senderConnection && senderConnection.connected) {
-        // Reenviar la respuesta al solicitante
         Participants = [];
         Participants.push(participant1, participant2);
-        senderConnection.sendUTF(JSON.stringify({ type: 'game_response', accept: data.accept, sender: data.sender, receiver: data.receiver }));
-        reiceiverConnection.sendUTF(JSON.stringify({ type: 'game_response', accept: data.accept, sender: data.sender, receiver: data.receiver }));
+
+        if (!gameStarted) {
+            senderConnection.sendUTF(JSON.stringify({ type: 'game_response', accept: data.accept, sender: data.sender, receiver: data.receiver }));
+            receiverConnection.sendUTF(JSON.stringify({ type: 'game_response', accept: data.accept, sender: data.sender, receiver: data.receiver }));
+            gameStarted = true; // Marcamos que el juego ha comenzado
+        }
     } else {
-        // Manejar el caso en que el solicitante no está conectado
         connection.sendUTF(JSON.stringify({ type: 'game_response_failure', message: 'Sender not found or not connected' }));
     }
 }
