@@ -80,6 +80,15 @@ ws.onmessage = (message) => {
                         requestGame(user.username);
                         e.target.style.display = "none";
                         e.target.removeEventListener('click', handleClick);
+                        const spinner = document.createElement('div');
+                        spinner.classList.add('spinner-border', 'text-light');
+                        spinner.setAttribute('role', 'status');
+                        const spinnerText = document.createElement('span');
+                        spinnerText.classList.add('visually-hidden');
+                        spinnerText.textContent = 'Loading...';
+                        spinner.appendChild(spinnerText);
+                        userList.appendChild(spinner);
+
                     });
                     userList.appendChild(listItem);
 
