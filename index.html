@@ -12,61 +12,66 @@
 </head>
 
 <body class="bg-dark text-white">
-    <div id="chat" class="bg-secondary p-3 mb-3"></div>
-    <div id="loginForm" class="mb-3">
-      <div class="row">
-          <div class="col-1">
-              <input type="text" id="usernameInput" class="form-control form-control-sm" placeholder="Username" autocomplete="off">
-          </div>
-          <div class="col-1">
-              <input type="password" id="passwordInput" class="form-control form-control-sm" placeholder="Password" autocomplete="off">
-          </div>
-      </div>
-      <div class="row mt-3">
-          <div class="col">
-              <button onclick="register()" class="btn btn-primary">Register</button>
-              <button onclick="login()" class="btn btn-primary">Login</button>
-          </div>
-      </div>
-  </div>
-    <div class="col-sm-2">
-        <input type="text" id="messageInput" class="form-control" placeholder="Type your message..." autocomplete="off">
-    </div>
-    <div class="mb-3">
-        <button onclick="sendMessage()" class="btn btn-primary">Send</button>
-        <button onclick="displayConnectedUsers()" class="btn btn-primary">Start Game</button>
-    </div>
-    <div id="usersList"></div>
-    <div class="modal fade" id="gameRequestModal" tabindex="-1" aria-labelledby="gameRequestModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content bg-dark text-white">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="gameRequestModalLabel">Game Request</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div id="chat" class="bg-secondary p-3 mb-3"></div>
+                <div id="game-board" class="mb-3">
+                    <div class="cell bg-secondary text-white" id="cell-0"></div>
+                    <div class="cell bg-secondary text-white" id="cell-1"></div>
+                    <div class="cell bg-secondary text-white" id="cell-2"></div>
+                    <div class="cell bg-secondary text-white" id="cell-3"></div>
+                    <div class="cell bg-secondary text-white" id="cell-4"></div>
+                    <div class="cell bg-secondary text-white" id="cell-5"></div>
+                    <div class="cell bg-secondary text-white" id="cell-6"></div>
+                    <div class="cell bg-secondary text-white" id="cell-7"></div>
+                    <div class="cell bg-secondary text-white" id="cell-8"></div>
                 </div>
-                <div class="modal-body">
-                    Do you want to accept the game request?
+                <button id="reset-button" onclick="resetGame()" class="btn btn-primary">Reset</button>
+            </div>
+            <div class="col-md-6">
+                <div id="loginForm" class="mb-3">
+                    <div class="row">
+                        <div class="col">
+                            <input type="text" id="usernameInput" class="form-control form-control-sm mb-2" placeholder="Username" autocomplete="off">
+                        </div>
+                        <div class="col">
+                            <input type="password" id="passwordInput" class="form-control form-control-sm mb-2" placeholder="Password" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <button onclick="register()" class="btn btn-primary me-2">Register</button>
+                            <button onclick="login()" class="btn btn-primary">Login</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="gameRequestModalNoBtn" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-primary" id="gameRequestModalYesBtn">Yes</button>
+                <div class="mb-3">
+                    <input type="text" id="messageInput" class="form-control mb-2" placeholder="Type your message..." autocomplete="off">
+                </div>
+                <div>
+                    <button onclick="sendMessage()" class="btn btn-primary me-2">Send</button>
+                    <button onclick="displayConnectedUsers()" class="btn btn-primary">Start Game</button>
+                </div>
+                <div id="usersList"></div>
+                <div class="modal fade" id="gameRequestModal" tabindex="-1" aria-labelledby="gameRequestModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content bg-dark text-white">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="gameRequestModalLabel">Game Request</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Do you want to accept the game request?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" id="gameRequestModalNoBtn" data-bs-dismiss="modal">No</button>
+                                <button type="button" class="btn btn-primary" id="gameRequestModalYesBtn">Yes</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div id="game-board">
-        <div class="cell bg-secondary text-white" id="cell-0"></div>
-        <div class="cell bg-secondary text-white" id="cell-1"></div>
-        <div class="cell bg-secondary text-white" id="cell-2"></div>
-        <div class="cell bg-secondary text-white" id="cell-3"></div>
-        <div class="cell bg-secondary text-white" id="cell-4"></div>
-        <div class="cell bg-secondary text-white" id="cell-5"></div>
-        <div class="cell bg-secondary text-white" id="cell-6"></div>
-        <div class="cell bg-secondary text-white" id="cell-7"></div>
-        <div class="cell bg-secondary text-white" id="cell-8"></div>
-    </div>
-    <button id="reset-button" onclick="resetGame()" class="btn btn-primary mt-3">Reset</button>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</body>
-
-</html>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9
